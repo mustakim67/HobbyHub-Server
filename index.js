@@ -24,6 +24,7 @@ async function run() {
     await client.connect();
 
      const UserCollection = client.db('UsersDB').collection('Users');
+     const GroupsCollection = client.db('UsersDB').collection('Groups');
 
       app.post('/users', async (req, res) => {
             const newUser = req.body;
@@ -35,6 +36,17 @@ async function run() {
             const result = await UserCollection.find().toArray();
             res.send(result);
         });
+//Create group -----------------------------------------------------
+        app.post('/groups',async (req,res)=>{
+          const newGroups = req.body;
+          const result =await GroupsCollection.insertOne(newGroups);
+          res.send(result);
+        })
+        app.get('/groups', async (req, res) => {
+            const result = await GroupsCollection.find().toArray();
+            res.send(result);
+        });
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
