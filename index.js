@@ -46,8 +46,26 @@ async function run() {
             const result = await GroupsCollection.find().toArray();
             res.send(result);
         });
+//Delte group--------------------------------------------------------
+app.delete('/groups/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await GroupsCollection.deleteOne(query);
+            res.send(result);
+        })
+//Update Group--------------------------------------------------------------
+ app.put('/groups/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true };
+            const updatedInfo = req.body;
+            const updatedDoc = {
+                $set: updatedInfo
+            }
+            const result = await GroupsCollection.updateOne(filter, updatedDoc, options);
 
-
+            res.send(result);
+        })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
