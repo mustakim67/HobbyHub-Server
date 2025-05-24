@@ -66,6 +66,22 @@ app.delete('/groups/:id', async (req, res) => {
 
             res.send(result);
         })
+//Find ongoing Groups from db-------------------------------------------------------
+app.get('/groups/featured', async (req, res) => {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+
+  const result = await GroupsCollection.find({
+    endDate: { $gt: todayStr }
+  }).toArray();
+
+  res.send(result);
+});
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
