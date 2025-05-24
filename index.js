@@ -75,7 +75,7 @@ app.get('/groups/featured', async (req, res) => {
   const todayStr = `${yyyy}-${mm}-${dd}`;
 
   const result = await GroupsCollection.find({
-    endDate: { $gt: todayStr }
+    endDate: { $gte: todayStr }
   }).toArray();
 
   res.send(result);
