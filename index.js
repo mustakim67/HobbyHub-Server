@@ -36,6 +36,29 @@ async function run() {
             const result = await UserCollection.find().toArray();
             res.send(result);
         });
+        //for ascending and descending order and search
+        // GET /sorted-groups?search=photography&sort=asc
+app.get('/sorted-groups', async (req, res) => {
+  try {
+    const { search = '', sort = 'desc' } = req.query;
+
+    const filter = search
+      ? { groupName: { $regex: search, $options: 'i' } }
+      : {};
+
+    const sortDirection = sort === 'asc' ? 1 : -1;
+
+    const result = await GroupsCollection.find(filter)
+      .sort({ groupName: sortDirection })
+      .toArray();
+
+    res.send(result);
+  } catch (err) {
+    console.error('Error fetching sorted groups:', err);
+    res.status(500).send({ error: 'Failed to fetch groups' });
+  }
+});
+
 //Create group -----------------------------------------------------
         app.post('/groups',async (req,res)=>{
           const newGroups = req.body;
