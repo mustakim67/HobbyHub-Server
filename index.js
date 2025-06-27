@@ -25,6 +25,7 @@ async function run() {
 
      const UserCollection = client.db('UsersDB').collection('Users');
      const GroupsCollection = client.db('UsersDB').collection('Groups');
+     const JoinedCollection = client.db('UsersDB').collection('Joined');
 
       app.post('/users', async (req, res) => {
             const newUser = req.body;
@@ -56,6 +57,40 @@ app.get('/sorted-groups', async (req, res) => {
   } catch (err) {
     console.error('Error fetching sorted groups:', err);
     res.status(500).send({ error: 'Failed to fetch groups' });
+  }
+});
+//store joined groups
+app.post('/joined', async (req, res) => {
+  try {
+    const { userEmail, groupId } = req.body;
+
+    const alreadyJoined = await JoinedCollection.findOne({ userEmail, groupId });
+    if (alreadyJoined) {
+      return res.status(400).send({ message: 'Already joined' });
+    }
+
+    const result = await JoinedCollection.insertOne({ userEmail, groupId });
+    res.send(result);
+  } catch (error) {
+    console.error('Error joining group:', error);
+    res.status(500).send({ error: 'Failed to join group' });
+  }
+});
+
+//get joined group
+app.get('/joined', async (req, res) => {
+  try {
+    const { email } = req.query;
+
+    if (!email) {
+      return res.status(400).send({ error: 'Email is required' });
+    }
+
+    const result = await JoinedCollection.find({ userEmail: email }).toArray();
+    res.send(result);
+  } catch (err) {
+    console.error('Error fetching joined groups:', err);
+    res.status(500).send({ error: 'Failed to fetch joined groups' });
   }
 });
 
